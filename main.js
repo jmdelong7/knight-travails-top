@@ -19,25 +19,52 @@ function knightMoves(start = [0, 0], end = [7, 7]) {
 
   const queue = [[start]];
   const visited = new Set();
-  while (queue.length !== 0) {
+  const paths = [];
+  let count = 0;
+  while (count !== 3) {
+    // while (queue.length !== 0) {
     const currPath = queue.shift();
     const currPathLen = currPath.length;
     const currVert = currPath[currPathLen - 1];
+    console.log('currPath: ', currPath);
+
     if (currVert === end) {
-      console.log(currPath);
+      console.log('made it');
+      paths.push(currPath);
+      console.log('paths: ', paths);
       break;
     }
 
-    waysToMove.forEach((move) => {
-      console.log(move);
-      const movedToVertex = move.map((num, idx) => num + currVert[idx]);
-      if (7 < movedToVertex[0] < 0 || 7 < movedToVertex[1] < 0) return;
-      if (visited.has(movedToVertex)) return;
-      visited.add(movedToVertex);
-      const newPath = currPath.push(movedToVertex);
-      queue.push(newPath);
+    const newVerts = waysToMove.flatMap(([x, y]) => {
+      const [i, j] = [x + currVert[0], y + currVert[1]];
+      return i >= 0 && i <= 7 && j >= 0 && j <= 7 ? [[i, j]] : [];
     });
+
+    newVerts.map((newVert) => {
+      visited.add(`${newVert[0]},${newVert[1]}`);
+      queue.push([...currPath, newVert]);
+    });
+
+    console.log('queue', queue);
+    // waysToMove.forEach((move) => {
+    //   const newVert = move.map((num, idx) => num + currVert[idx]);
+    //   const [x, y] = newVert;
+    //   console.log('newVert: ', newVert);
+
+    //   if (x < 0 || x > 7 || y < 0 || y > 7) return;
+    //   if (visited.has(newVert)) return;
+    //   visited.add(newVert);
+
+    //   const newPath = currPath;
+    //   newPath.push(newVert);
+    //   console.log('newPath: ', newPath);
+    //   queue.push(newPath);
+    // });
+
+    count++;
   }
+
+  return paths;
 }
 
 knightMoves([0, 0], [3, 3]);
